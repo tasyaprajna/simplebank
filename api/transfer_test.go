@@ -11,7 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
-	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/tasyaprajna/simplebank/db/mock"
 	db "github.com/tasyaprajna/simplebank/db/sqlc"
@@ -117,7 +116,7 @@ func TestTransferAPI(t *testing.T) {
 				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user1.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account1.ID)).Times(1).Return(db.Accounts{}, pgx.ErrNoRows)
+				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account1.ID)).Times(1).Return(db.Accounts{}, sql.ErrNoRows)
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account2.ID)).Times(0)
 				store.EXPECT().TransferTx(gomock.Any(), gomock.Any()).Times(0)
 			},
@@ -138,7 +137,7 @@ func TestTransferAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account1.ID)).Times(1).Return(account1, nil)
-				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account2.ID)).Times(1).Return(db.Accounts{}, pgx.ErrNoRows)
+				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account2.ID)).Times(1).Return(db.Accounts{}, sql.ErrNoRows)
 				store.EXPECT().TransferTx(gomock.Any(), gomock.Any()).Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
